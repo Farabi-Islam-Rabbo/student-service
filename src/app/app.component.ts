@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
   categoryData: string[] = [];
   dataList: string[] = [];
   disableInput: boolean = true;
+  detailsModel: boolean = false;
   existingEntries: any[] = [];
   categoryEntries: any[] = [];
   tableData: any[] = [];
@@ -98,5 +99,8 @@ export class AppComponent implements OnInit {
   }
   removeBtn() {
     this.disableInput = true;
+  }
+  detailsBtn() {
+    this.detailsModel = true;
   }
 }
