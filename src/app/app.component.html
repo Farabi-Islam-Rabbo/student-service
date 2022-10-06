@@ -15,6 +15,15 @@
   novalidate
   class="mx-auto border col-md-6 main-container pb-2"
 >
+  <div>
+    <p>Category Name</p>
+    <div class="col-md-8 border">
+      <div class="d-flex col-md-6 justify-content-between p-3">
+        <p>Item title</p>
+        <button>Details</button>
+      </div>
+    </div>
+  </div>
   <!-- Modal -->
   <div
     class="modal fade"
@@ -71,13 +80,24 @@
           </div>
           <div class="form-row my-3">
             <div class="form-group col-md-10 d-flex">
+              <select
+                formControlName="category"
+                class="form-control pt-0"
+                *ngIf="disableInput"
+              >
+                <option value="0">-Select-</option>
+                <option *ngFor="let item of dataList" [value]="item">
+                  {{ item }}
+                </option>
+              </select>
               <input
                 type="text"
                 class="form-control col-md-10"
-                id="category"
-                formControlName="category"
-                name="category"
+                id="categoryinput"
+                formControlName="categoryinput"
+                name="categoryinput"
                 required
+                *ngIf="!disableInput"
               />
               <button class="button__add col-md-1" (click)="addCategory()">
                 +
