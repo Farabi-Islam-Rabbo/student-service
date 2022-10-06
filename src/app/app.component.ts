@@ -10,16 +10,41 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class AppComponent implements OnInit {
   AddBookmarkForm!: FormGroup;
   categoryData: string[] = [];
-  dataList: any[] = [];
+  dataList: string[] = [];
   disableInput: boolean = true;
-  bookMarkData: any[] = [];
+  existingEntries: any[] = [];
+  categoryEntries: any[] = [];
+  tableData: any[] = [];
 
   ngOnInit(): void {
-    this.initializeFrom();
-    this.getCategory();
-    this.getBookmarkData();
+    this.initializeForm();
   }
-  initializeFrom() {
+
+  getData() {
+    const getBookmarkData = localStorage.getItem('Grid');
+    const parsedArr = JSON.parse(getBookmarkData ? getBookmarkData : '');
+
+    const getCategory = localStorage.getItem('category');
+    const parsedArrCate = JSON.parse(getCategory ? getCategory : '');
+
+    //Find The Unique Data
+    const uniqueArray = parsedArrCate
+      .map((item: any) => item.category)
+      .filter(
+        (value: any, index: any, self: any) => self.indexOf(value) === index
+      );
+
+    //Assign unique value to array for get value in dropdown
+    this.dataList = uniqueArray;
+
+    //Result for getting category wise data
+    const finalResult = uniqueArray.map((item: any) => {
+      return parsedArr.filter((x: any) => x.category === item);
+    });
+    this.tableData = finalResult;
+  }
+
+  initializeForm() {
     this.AddBookmarkForm = new FormGroup({
       title: new FormControl('', [Validators.required]),
       url: new FormControl('', [
@@ -31,38 +56,39 @@ export class AppComponent implements OnInit {
       category: new FormControl('0', [Validators.required]),
       categoryinput: new FormControl(''),
     });
+    this.getData();
   }
 
   saveData() {
     // form Data save
-    var formValue = [];
-    let retrievedData = localStorage.getItem('Grid');
-    console.log('getItem', JSON.stringify(retrievedData));
+    let retrievedData = localStorage.getItem('Grid'); //Get bookmark data from locastorage
 
-    if (retrievedData) {
-      let saveData = JSON.parse(retrievedData ?? '');
-      formValue.push(saveData);
-      let formData = this.AddBookmarkForm.value;
-      formValue.push(formData);
-      localStorage.setItem('Grid', JSON.stringify(formValue));
-      alert('Bookmark Saved!');
-      this.ngOnInit();
-    } else {
-      localStorage.setItem('Grid', JSON.stringify(this.AddBookmarkForm.value));
-      alert('Bookmark Saved!');
-      this.ngOnInit();
+    if (retrievedData?.length) {
+      //check retrive data has value or not
+      this.existingEntries = JSON.parse(retrievedData ?? ''); //Checking extisting
+      if (this.existingEntries == null) this.existingEntries = []; //If existing item is null
     }
+    var formValue = {
+      title: this.AddBookmarkForm.value.title,
+      url: this.AddBookmarkForm.value.url,
+      category: this.AddBookmarkForm.value.category,
+    };
+
+    this.existingEntries.push(formValue);
+    localStorage.setItem('Grid', JSON.stringify(this.existingEntries));
 
     // Category data save
-    if (!this.disableInput) {
-      let category = this.AddBookmarkForm.value.categoryinput;
-      this.categoryData.push(category);
-      localStorage.setItem('category', JSON.stringify(this.categoryData));
-    } else {
-      let category = this.AddBookmarkForm.value.category;
-      this.categoryData.push(category);
-      localStorage.setItem('category', JSON.stringify(this.categoryData));
+    let categoryData = localStorage.getItem('category');
+    if (categoryData?.length) {
+      this.categoryEntries = JSON.parse(categoryData ?? ''); //check previous data
+      if (this.categoryEntries == null) this.categoryEntries = [];
     }
+    var Value = { category: this.AddBookmarkForm.value.category };
+
+    this.categoryEntries.push(Value);
+    localStorage.setItem('category', JSON.stringify(this.categoryEntries));
+    this.ngOnInit();
+    this.getData();
   }
 
   addCategory() {
@@ -70,18 +96,7 @@ export class AppComponent implements OnInit {
     this.AddBookmarkForm.value.category =
       this.AddBookmarkForm.value.categoryinput;
   }
-
-  getCategory() {
-    let retrievedData = localStorage.getItem('category');
-    let categories = JSON.parse(retrievedData ?? '');
-    this.dataList = categories;
-    console.log('categories', categories);
-  }
-
-  getBookmarkData() {
-    let retrievedData = localStorage.getItem('Grid');
-    let bookMarkData = JSON.parse(retrievedData ?? '');
-    this.bookMarkData = bookMarkData;
-    console.log('Bookmark data', bookMarkData);
+  removeBtn() {
+    this.disableInput = true;
   }
 }
