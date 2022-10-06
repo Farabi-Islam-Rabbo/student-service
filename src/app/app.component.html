@@ -41,8 +41,10 @@
                 type="text"
                 formControlName="title"
                 class="form-control"
-                id="tile"
+                id="title"
                 placeholder="Title"
+                maxlength="30"
+                required
               />
             </div>
           </div>
@@ -54,7 +56,17 @@
                 class="form-control"
                 id="url"
                 placeholder="Url"
+                required
               />
+              <div
+                *ngIf="
+                  AddBookmarkForm.controls['url'].invalid &&
+                  AddBookmarkForm.controls['url'].touched
+                "
+                class="text-danger ml-4"
+              >
+                Your URL is invalid*
+              </div>
             </div>
           </div>
           <div class="form-row my-3">
@@ -65,8 +77,11 @@
                 id="category"
                 formControlName="category"
                 name="category"
+                required
               />
-              <button class="button__add col-md-1">+</button>
+              <button class="button__add col-md-1" (click)="addCategory()">
+                +
+              </button>
             </div>
           </div>
         </div>
@@ -76,9 +91,16 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Close
+            Cancel
           </button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="saveData()"
+            [disabled]="!AddBookmarkForm.valid"
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>
