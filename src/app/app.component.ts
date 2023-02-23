@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   existingEntries: any[] = [];
   categoryEntries: any[] = [];
   tableData: any[] = [];
+  singleItem: any = {};
 
   ngOnInit(): void {
     this.initializeForm();
@@ -43,6 +44,7 @@ export class AppComponent implements OnInit {
       return parsedArr.filter((x: any) => x.category === item);
     });
     this.tableData = finalResult;
+    console.log("my data====", this.tableData);
   }
 
   initializeForm() {
@@ -73,6 +75,7 @@ export class AppComponent implements OnInit {
       title: this.AddBookmarkForm.value.title,
       url: this.AddBookmarkForm.value.url,
       category: this.AddBookmarkForm.value.category,
+      status: this.AddBookmarkForm.value.status
     };
 
     this.existingEntries.push(formValue);
@@ -100,7 +103,24 @@ export class AppComponent implements OnInit {
   removeBtn() {
     this.disableInput = true;
   }
-  detailsBtn() {
+  detailsBtn(title:any) {
+    console.log("title====",this.tableData)
+    this.tableData.map((e)=>{
+      console.log('heyyyyy=====',e[0].title)
+      if(e[0].title == title){
+        console.log('ghghghgh======')
+        this.singleItem.title = e[0].title
+        this.singleItem.url= e[0].url
+        this.singleItem.category= e[0].category
+
+      }
+    })
+    //this.singleItem = this.tableData.find(e=> e[0].title == title)
+    console.log("single item====",this.singleItem)
+    if(this.detailsModel){
+      this.detailsModel = false;
+    }else{
     this.detailsModel = true;
+    }
   }
 }
